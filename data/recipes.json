@@ -1,0 +1,362 @@
+[
+  {
+    "a": "hydrogen",
+    "b": "oxygen",
+    "productId": "water",
+    "name": "Water",
+    "formula": "H2O",
+    "reactantFormulas": [
+      "H2",
+      "O2"
+    ],
+    "coefficients": [
+      2,
+      1,
+      2
+    ],
+    "equation": "2H2 + O2 → 2H2O",
+    "conditions": "Activation energy is required.",
+    "concept": "Two hydrogen atoms share electrons with one oxygen atom. The bent molecule is polar.",
+    "uses": "Water dissolves many ionic and polar substances."
+  },
+  {
+    "a": "sodium",
+    "b": "chlorine",
+    "productId": "sodium-chloride",
+    "name": "Sodium chloride",
+    "formula": "NaCl",
+    "reactantFormulas": [
+      "Na",
+      "Cl2"
+    ],
+    "coefficients": [
+      2,
+      1,
+      2
+    ],
+    "equation": "2Na + Cl2 → 2NaCl",
+    "conditions": "Contact between elemental sodium and chlorine.",
+    "concept": "Sodium and chloride ions form a repeating crystal lattice.",
+    "uses": "A familiar seasoning and a source of dissolved ions."
+  },
+  {
+    "a": "iron",
+    "b": "sulfur",
+    "productId": "iron-sulfide",
+    "name": "Iron sulfide",
+    "formula": "FeS",
+    "reactantFormulas": [
+      "Fe",
+      "S8"
+    ],
+    "coefficients": [
+      8,
+      1,
+      8
+    ],
+    "equation": "8Fe + S8 → 8FeS",
+    "conditions": "Thermal activation of the elements.",
+    "concept": "Iron(II) sulfide contains iron and sulfur in a one-to-one ratio.",
+    "uses": "Iron sulfides occur in minerals."
+  },
+  {
+    "a": "carbon",
+    "b": "oxygen",
+    "productId": "carbon-dioxide",
+    "name": "Carbon dioxide",
+    "formula": "CO2",
+    "reactantFormulas": [
+      "C",
+      "O2"
+    ],
+    "coefficients": [
+      1,
+      1,
+      1
+    ],
+    "equation": "C + O2 → CO2",
+    "conditions": "Complete combustion with sufficient oxygen.",
+    "concept": "Carbon forms two double bonds in this linear molecule.",
+    "uses": "Plants use carbon dioxide during photosynthesis."
+  },
+  {
+    "a": "magnesium",
+    "b": "oxygen",
+    "productId": "magnesium-oxide",
+    "name": "Magnesium oxide",
+    "formula": "MgO",
+    "reactantFormulas": [
+      "Mg",
+      "O2"
+    ],
+    "coefficients": [
+      2,
+      1,
+      2
+    ],
+    "equation": "2Mg + O2 → 2MgO",
+    "conditions": "Thermal activation in oxygen.",
+    "concept": "Magnesium ions and oxide ions pack together in a solid lattice.",
+    "uses": "Used in heat-resistant furnace linings."
+  },
+  {
+    "a": "calcium",
+    "b": "oxygen",
+    "productId": "calcium-oxide",
+    "name": "Calcium oxide",
+    "formula": "CaO",
+    "reactantFormulas": [
+      "Ca",
+      "O2"
+    ],
+    "coefficients": [
+      2,
+      1,
+      2
+    ],
+    "equation": "2Ca + O2 → 2CaO",
+    "conditions": "Oxidation of calcium in oxygen.",
+    "concept": "Each calcium ion balances one oxide ion.",
+    "uses": "Used in cement manufacturing."
+  },
+  {
+    "a": "copper",
+    "b": "oxygen",
+    "productId": "copper-oxide",
+    "name": "Copper(II) oxide",
+    "formula": "CuO",
+    "reactantFormulas": [
+      "Cu",
+      "O2"
+    ],
+    "coefficients": [
+      2,
+      1,
+      2
+    ],
+    "equation": "2Cu + O2 → 2CuO",
+    "conditions": "Heated copper in excess oxygen.",
+    "concept": "Copper is in the +2 oxidation state in this black solid.",
+    "uses": "Used as a pigment in ceramic glazes."
+  },
+  {
+    "a": "silicon",
+    "b": "oxygen",
+    "productId": "silicon-dioxide",
+    "name": "Silicon dioxide",
+    "formula": "SiO2",
+    "reactantFormulas": [
+      "Si",
+      "O2"
+    ],
+    "coefficients": [
+      1,
+      1,
+      1
+    ],
+    "equation": "Si + O2 → SiO2",
+    "conditions": "Thermal oxidation of silicon.",
+    "concept": "In quartz, oxygen bridges silicon atoms in an extended network.",
+    "uses": "Silica is a principal ingredient of glass."
+  },
+  {
+    "a": "nitrogen",
+    "b": "hydrogen",
+    "productId": "ammonia",
+    "name": "Ammonia",
+    "formula": "NH3",
+    "reactantFormulas": [
+      "N2",
+      "H2"
+    ],
+    "coefficients": [
+      1,
+      3,
+      2
+    ],
+    "equation": "N2 + 3H2 → 2NH3",
+    "conditions": "Industrial catalytic synthesis under elevated pressure.",
+    "concept": "Nitrogen shares three pairs of electrons with hydrogen atoms.",
+    "uses": "A starting material for nitrogen fertilizers."
+  },
+  {
+    "a": "calcium-oxide",
+    "b": "water",
+    "productId": "calcium-hydroxide",
+    "name": "Calcium hydroxide",
+    "formula": "Ca(OH)2",
+    "reactantFormulas": [
+      "CaO",
+      "H2O"
+    ],
+    "coefficients": [
+      1,
+      1,
+      1
+    ],
+    "equation": "CaO + H2O → Ca(OH)2",
+    "conditions": "Hydration of calcium oxide.",
+    "concept": "Calcium ions balance pairs of hydroxide ions.",
+    "uses": "Used in traditional lime mortar."
+  },
+  {
+    "a": "calcium-oxide",
+    "b": "carbon-dioxide",
+    "productId": "calcium-carbonate",
+    "name": "Calcium carbonate",
+    "formula": "CaCO3",
+    "reactantFormulas": [
+      "CaO",
+      "CO2"
+    ],
+    "coefficients": [
+      1,
+      1,
+      1
+    ],
+    "equation": "CaO + CO2 → CaCO3",
+    "conditions": "Carbonation under suitable conditions.",
+    "concept": "Carbonate ions contain one carbon and three oxygen atoms.",
+    "uses": "Limestone and chalk consist largely of calcium carbonate."
+  },
+  {
+    "a": "aluminium",
+    "b": "oxygen",
+    "productId": "aluminium-oxide",
+    "name": "Aluminium oxide",
+    "formula": "Al2O3",
+    "reactantFormulas": [
+      "Al",
+      "O2"
+    ],
+    "coefficients": [
+      4,
+      3,
+      2
+    ],
+    "equation": "4Al + 3O2 → 2Al2O3",
+    "conditions": "Surface oxidation in air.",
+    "concept": "A thin oxide film helps protect aluminium from further oxidation.",
+    "uses": "Used in abrasives and ceramics."
+  },
+  {
+    "a": "zinc",
+    "b": "oxygen",
+    "productId": "zinc-oxide",
+    "name": "Zinc oxide",
+    "formula": "ZnO",
+    "reactantFormulas": [
+      "Zn",
+      "O2"
+    ],
+    "coefficients": [
+      2,
+      1,
+      2
+    ],
+    "equation": "2Zn + O2 → 2ZnO",
+    "conditions": "Thermal oxidation in oxygen.",
+    "concept": "Zinc oxide is an inorganic semiconductor.",
+    "uses": "Used as a white pigment."
+  },
+  {
+    "a": "magnesium",
+    "b": "chlorine",
+    "productId": "magnesium-chloride",
+    "name": "Magnesium chloride",
+    "formula": "MgCl2",
+    "reactantFormulas": [
+      "Mg",
+      "Cl2"
+    ],
+    "coefficients": [
+      1,
+      1,
+      1
+    ],
+    "equation": "Mg + Cl2 → MgCl2",
+    "conditions": "Direct reaction of the elements.",
+    "concept": "Two chloride ions balance the charge on a magnesium ion.",
+    "uses": "A source of magnesium ions."
+  },
+  {
+    "a": "potassium",
+    "b": "chlorine",
+    "productId": "potassium-chloride",
+    "name": "Potassium chloride",
+    "formula": "KCl",
+    "reactantFormulas": [
+      "K",
+      "Cl2"
+    ],
+    "coefficients": [
+      2,
+      1,
+      2
+    ],
+    "equation": "2K + Cl2 → 2KCl",
+    "conditions": "Direct reaction of the elements.",
+    "concept": "This ionic solid has equal numbers of potassium and chloride ions.",
+    "uses": "Used in potassium fertilizers."
+  },
+  {
+    "a": "sodium",
+    "b": "bromine",
+    "productId": "sodium-bromide",
+    "name": "Sodium bromide",
+    "formula": "NaBr",
+    "reactantFormulas": [
+      "Na",
+      "Br2"
+    ],
+    "coefficients": [
+      2,
+      1,
+      2
+    ],
+    "equation": "2Na + Br2 → 2NaBr",
+    "conditions": "Direct reaction of the elements.",
+    "concept": "Sodium and bromide form oppositely charged ions.",
+    "uses": "A source of bromide ions in solution."
+  },
+  {
+    "a": "calcium",
+    "b": "chlorine",
+    "productId": "calcium-chloride",
+    "name": "Calcium chloride",
+    "formula": "CaCl2",
+    "reactantFormulas": [
+      "Ca",
+      "Cl2"
+    ],
+    "coefficients": [
+      1,
+      1,
+      1
+    ],
+    "equation": "Ca + Cl2 → CaCl2",
+    "conditions": "Direct reaction of the elements.",
+    "concept": "Two chloride ions balance one calcium ion.",
+    "uses": "Used as a desiccant because it takes up moisture."
+  },
+  {
+    "a": "lithium",
+    "b": "nitrogen",
+    "productId": "lithium-nitride",
+    "name": "Lithium nitride",
+    "formula": "Li3N",
+    "reactantFormulas": [
+      "Li",
+      "N2"
+    ],
+    "coefficients": [
+      6,
+      1,
+      2
+    ],
+    "equation": "6Li + N2 → 2Li3N",
+    "conditions": "Elemental lithium in contact with nitrogen.",
+    "concept": "Three lithium ions balance a nitride ion.",
+    "uses": "Studied as an ionic conductor."
+  }
+]
