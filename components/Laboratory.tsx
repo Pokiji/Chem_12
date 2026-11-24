@@ -16,17 +16,13 @@ import {
   CircleHelp,
   Clock3,
   FlaskConical,
-  FlaskRound,
-  GripVertical,
   Grid2X2,
-  Layers3,
   Menu,
   MousePointer2,
   PanelLeftClose,
   Plus,
   Search,
   Settings2,
-  Sparkles,
   Trash2,
   Undo2,
   X,
@@ -357,10 +353,6 @@ export default function Laboratory() {
           Little<span className="brand-second">Chemistry</span>
         </div>
         <nav>
-          <button className="nav-active" onClick={() => setModal(null)}>
-            <FlaskRound />
-            Laboratory
-          </button>
           <button onClick={() => setModal("journal")}>
             <BookOpen />
             Journal
@@ -373,9 +365,6 @@ export default function Laboratory() {
           </button>
         </nav>
         <div className="top-actions">
-          <span className="local-status">
-            <i /> Local session
-          </span>
           <button
             className="iconbtn"
             title="Help"
@@ -398,10 +387,15 @@ export default function Laboratory() {
         <aside className={library ? "sidebar mobile-open" : "sidebar"}>
           <div className="side-top">
             <div className="side-title">
-              <div>
-                <span className="micro">COLLECTION</span>
-                <h2>Substance library</h2>
-              </div>
+              <h2>Substance library</h2>
+              <button
+                className={"sort-button iconbtn " + (sorted ? "blue" : "")}
+                aria-label="Toggle alphabetical sorting"
+                aria-pressed={sorted}
+                onClick={() => setSorted(!sorted)}
+              >
+                <ArrowDownAZ size={16} />
+              </button>
               <button
                 className="only-mobile iconbtn"
                 onClick={() => setLibrary(false)}
@@ -409,7 +403,6 @@ export default function Laboratory() {
               >
                 <PanelLeftClose size={18} />
               </button>
-              <Layers3 size={19} className="side-icon" />
             </div>
             <label className="search">
               <Search size={16} />
@@ -424,6 +417,7 @@ export default function Laboratory() {
               {["All", "Elements", "Compounds"].map((f) => (
                 <button
                   key={f}
+                  aria-pressed={filter === f}
                   onClick={() => setFilter(f)}
                   className={filter === f ? "active" : ""}
                 >
@@ -431,19 +425,6 @@ export default function Laboratory() {
                 </button>
               ))}
             </div>
-          </div>
-          <div className="list-label">
-            <span>
-              {filter === "All" ? "AVAILABLE SUBSTANCES" : filter.toUpperCase()}{" "}
-              <em>{choices.length}</em>
-            </span>
-            <button
-              className={"iconbtn " + (sorted ? "blue" : "")}
-              aria-label="Toggle alphabetical sorting"
-              onClick={() => setSorted(!sorted)}
-            >
-              <ArrowDownAZ size={14} />
-            </button>
           </div>
           <div className="sub-list">
             {choices.map((s) => (
@@ -467,7 +448,6 @@ export default function Laboratory() {
                   <b>{s.name}</b>
                   <small>{elemental.get(s.id)?.category ?? s.category}</small>
                 </span>
-                <GripVertical size={14} />
               </button>
             ))}
             {!choices.length && (
@@ -488,13 +468,7 @@ export default function Laboratory() {
         </aside>
         <main>
           <div className="headline">
-            <div>
-              <div className="eyebrow">
-                <span /> CHEMISTRY WORKSPACE
-              </div>
-              <h1>Reaction sandbox</h1>
-              <p>Combine substances and see what you discover.</p>
-            </div>
+            <h1>Reaction sandbox</h1>
             <div className="mode">
               <FlaskConical size={15} />
               <select
@@ -509,22 +483,11 @@ export default function Laboratory() {
               <ChevronDown size={13} />
             </div>
           </div>
-          <button
-            className="only-mobile primary"
-            onClick={() => setLibrary(true)}
-          >
-            <Menu size={16} />
-            Substance library
-          </button>
           <section className="canvas-frame">
             <header className="canvas-head">
-              <div>
-                <span className="blue-square">
-                  <Layers3 size={16} />
-                </span>
-                <b>Workspace</b>
-                <span className="count">{lab.items.length} items</span>
-              </div>
+              <button className="only-mobile library-toggle" onClick={() => setLibrary(true)}>
+                <Menu size={16} /> Library
+              </button>
               <div>
                 {mode === "hard" && (
                   <button onClick={() => setModal("build")}>
@@ -558,10 +521,6 @@ export default function Laboratory() {
               </div>
             </header>
             <div className={"canvas " + (game.grid ? "grid" : "")} ref={canvas}>
-              <div className="canvas-legend">
-                <i />
-                SANDBOX ACTIVE
-              </div>
               {lab.items.map((i) => {
                 const s = lookup(i.id);
                 return (
@@ -611,9 +570,6 @@ export default function Laboratory() {
                   )}
                 </div>
               )}
-              <div className="axes" aria-hidden="true">
-                ⌞ <span>x / y</span>
-              </div>
             </div>
             <footer className="canvas-foot">
               <MousePointer2 size={14} />
@@ -624,10 +580,7 @@ export default function Laboratory() {
                     ? "Select a second sample to combine."
                     : "Drag substances together to combine them."}
               </span>
-              <span className="saved">
-                <i />
-                {saved ? "Locally saved" : "Storage unavailable"}
-              </span>
+              {!saved && <span role="status">Storage unavailable</span>}
             </footer>
           </section>
           {message && (
@@ -643,16 +596,8 @@ export default function Laboratory() {
               </button>
             </div>
           )}
-          <section className="guide">
-            <div className="section-head">
-              <div className="guide-heading">
-                <span className="guide-icon">
-                  <Sparkles size={17} />
-                </span>
-                <h2>Experiment starters</h2>
-              </div>
-              <span className="guide-note">Select a pair to explore</span>
-            </div>
+          <details className="guide">
+            <summary>Experiment starters</summary>
             <div className="guide-cards">
               {guides.map((r) => (
                 <button
@@ -699,16 +644,7 @@ export default function Laboratory() {
                 </button>
               ))}
             </div>
-          </section>
-          <footer className="main-foot">
-            <span>
-              <Atom size={14} /> Little Chemistry
-            </span>
-            <button onClick={() => setModal("journal")}>
-              <BookOpen size={14} />
-              {lab.discoveries.length} discoveries
-            </button>
-          </footer>
+          </details>
         </main>
       </div>
       {ghost && (
@@ -868,23 +804,25 @@ export default function Laboratory() {
                   {s.name}
                 </button>
               ))}
-              <h3>Experiment history</h3>
-              {!lab.log.length ? (
-                <p>
-                  Your experiments will appear here. Try combining hydrogen and
-                  oxygen.
-                </p>
-              ) : (
-                lab.log.map((entry, i) => (
-                  <article className="entry" key={i}>
-                    <Clock3 size={15} />
-                    <div>
-                      <b>{entry.title}</b>
-                      <p>{entry.detail}</p>
-                    </div>
-                  </article>
-                ))
-              )}
+              <details className="history">
+                <summary>Experiment history ({lab.log.length})</summary>
+                {!lab.log.length ? (
+                  <p>
+                    Your experiments will appear here. Try combining hydrogen and
+                    oxygen.
+                  </p>
+                ) : (
+                  lab.log.map((entry, i) => (
+                    <article className="entry" key={i}>
+                      <Clock3 size={15} />
+                      <div>
+                        <b>{entry.title}</b>
+                        <p>{entry.detail}</p>
+                      </div>
+                    </article>
+                  ))
+                )}
+              </details>
             </>
           )}
         </Dialog>
