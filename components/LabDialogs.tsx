@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { X, FlaskConical } from "lucide-react";
 import { buildAtom, elements, type Substance } from "../lib/chem";
 import { Molecule, colorFor } from "./Molecule";
-import { formulaFor, type Entry } from "../lib/game";
+import { formulaFor, type BuiltAtom, type Entry } from "../lib/game";
 
 export function Dialog({
   title,
@@ -42,14 +42,19 @@ export function Dialog({
     </dialog>
   );
 }
+export const particles = ["Proton", "Neutron", "Electron"] as const;
+export type Particle = (typeof particles)[number];
+
 export function Builder({
+  first,
   onBuild,
 }: {
-  onBuild: (id: string, label: string) => void;
+  first: Particle | null;
+  onBuild: (atom: BuiltAtom) => void;
 }) {
-  const [p, setP] = useState(1),
-    [n, setN] = useState(0),
-    [e, setE] = useState(1);
+  const [p, setP] = useState(first === "Proton" ? 1 : 0),
+    [n, setN] = useState(first === "Neutron" ? 1 : 0),
+    [e, setE] = useState(first === "Electron" ? 1 : 0);
   let atom: ReturnType<typeof buildAtom> | undefined,
     error = "";
   try {
@@ -59,10 +64,10 @@ export function Builder({
   }
   return (
     <>
-      <p>Choose an isotope preset or adjust the particle counts.</p>
+      <p>For hydrogen-1, use one proton, zero neutrons and one electron. For another atom, adjust the counts or load an isotope preset.</p>
       <select
         aria-label="Element preset"
-        value={elements[p - 1]?.id ?? ""}
+        value=""
         onChange={(ev) => {
           const s = elements.find((s) => s.id === ev.target.value)!;
           setP(s.number);
@@ -70,6 +75,7 @@ export function Builder({
           setE(s.number);
         }}
       >
+        <option value="" disabled>Load isotope preset…</option>
         {elements.map((s) => (
           <option value={s.id} key={s.id}>
             {s.number} · {s.name}
@@ -132,8 +138,8 @@ export function Builder({
             ["Electrons", e, setE],
           ] as const
         ).map(([name, value, set]) => (
-          <label key={name}>
-            {name}
+          <div key={name}>
+            <label>{name}
             <input
               type="number"
               min="0"
@@ -141,7 +147,10 @@ export function Builder({
               value={Number.isNaN(value) ? "" : value}
               onChange={(event) => set(event.target.valueAsNumber)}
             />
-          </label>
+            </label>
+            <button className="secondary" aria-label={"Add one " + name.slice(0, -1).toLowerCase()}
+              onClick={() => set((count) => (Number.isFinite(count) ? count : 0) + 1)}>+1</button>
+          </div>
         ))}
       </div>
       {atom ? (
@@ -153,26 +162,15 @@ export function Builder({
           {atom.isotopeStatus === "known"
             ? "Catalogued isotope"
             : "Isotope unverified in the local catalogue"}
-          . Crafting uses a neutral elemental sample.
+          . {atom.charge === 0 ? "Ready to add as a neutral elemental sample." : "Match electrons to protons to add a neutral sample."}
         </p>
       ) : (
         <p role="alert">{error}</p>
       )}
       <button
         className="primary"
-        disabled={!atom}
-        onClick={() =>
-          atom &&
-          onBuild(
-            atom.element.id,
-            atom.element.name +
-              "–" +
-              atom.massNumber +
-              " (charge " +
-              atom.charge +
-              ")",
-          )
-        }
+        disabled={!atom || atom.charge !== 0}
+        onClick={() => atom && atom.charge === 0 && onBuild(atom)}
       >
         <FlaskConical size={16} /> Add elemental sample
       </button>

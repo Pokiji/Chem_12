@@ -486,7 +486,26 @@ option {
   font-size: 14px;
   font-weight: 570;
 }
+.particle-shelf {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.particle-shelf > div { display: flex; flex-wrap: wrap; gap: 6px; }
+.particle-shelf button {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 9px;
+  gap: 6px;
+}
+.particle-shelf b { color: #aad3fc; }
 .empty-canvas {
+  padding: 14px;
+  text-align: center;
   height: 100%;
   display: flex;
   align-items: center;
@@ -611,12 +630,14 @@ dialog.wide {
   display: flex;
   gap: 10px;
 }
-.particle-inputs label {
+.particle-inputs > div {
   flex: 1;
   width: 0;
   font-size: 12px;
   color: var(--muted);
 }
+.particle-inputs label { display: block; }
+.particle-inputs button { margin-top: 6px; width: 100%; }
 .particle-inputs input,
 .dialog-inner select {
   width: 100%;

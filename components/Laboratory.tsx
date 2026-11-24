@@ -37,6 +37,7 @@ import {
   type Substance,
 } from "../lib/chem";
 import {
+  addBuiltAtom,
   discover,
   formulaFor,
   freshLab,
@@ -50,7 +51,7 @@ import {
   type Mode,
   type Sample,
 } from "../lib/game";
-import { Builder, Details, Dialog, Periodic } from "./LabDialogs";
+import { Builder, Details, Dialog, particles, Periodic, type Particle } from "./LabDialogs";
 import { colorFor, Molecule } from "./Molecule";
 
 type Modal =
@@ -83,6 +84,11 @@ export default function Laboratory() {
     [ready, setReady] = useState(false),
     [modal, setModal] = useState<Modal>(null),
     [detail, setDetail] = useState("hydrogen");
+  const [firstParticle, setFirstParticle] = useState<Particle | null>(null);
+  function openBuilder(first: Particle | null = null) {
+    setFirstParticle(first);
+    setModal("build");
+  }
   const [query, setQuery] = useState(""),
     [filter, setFilter] = useState("All"),
     [sorted, setSorted] = useState(false),
@@ -146,7 +152,6 @@ export default function Laboratory() {
     setMessage("");
     setQuery("");
     setFilter("All");
-    if (m === "hard" && !game.hard.discoveries.length) setModal("build");
   }
   const owned = (
     mode === "easy" ? ordered.map((id) => catalog.get(id)!) : []
@@ -451,7 +456,7 @@ export default function Laboratory() {
               </button>
             ))}
             {!choices.length && (
-              <p className="muted">No matching substances.</p>
+              <p className="muted">{owned.length ? "No matching substances." : "Atoms you build will appear here."}</p>
             )}
           </div>
           <button
@@ -490,7 +495,7 @@ export default function Laboratory() {
               </button>
               <div>
                 {mode === "hard" && (
-                  <button onClick={() => setModal("build")}>
+                  <button disabled={busy} onClick={() => openBuilder()}>
                     <Atom size={15} />
                     Build atom
                   </button>
@@ -520,6 +525,16 @@ export default function Laboratory() {
                 </button>
               </div>
             </header>
+            {mode === "hard" && (
+              <section className="particle-shelf" aria-label="Subatomic particles">
+                <strong>Subatomic particles</strong>
+                <div>{particles.map((particle, index) => (
+                  <button key={particle} disabled={busy} onClick={() => openBuilder(particle)}>
+                    <b aria-hidden="true">{["p⁺", "n⁰", "e⁻"][index]}</b>{particle}
+                  </button>
+                ))}</div>
+              </section>
+            )}
             <div className={"canvas " + (game.grid ? "grid" : "")} ref={canvas}>
               {lab.items.map((i) => {
                 const s = lookup(i.id);
@@ -557,17 +572,10 @@ export default function Laboratory() {
                   <Atom />
                   <p>
                     {mode === "hard"
-                      ? "Build an atom to start experimenting."
+                      ? "Choose a particle above to start building hydrogen."
                       : "Select a substance from the library."}
                   </p>
-                  {mode === "hard" && (
-                    <button
-                      className="primary"
-                      onClick={() => setModal("build")}
-                    >
-                      Open atom builder
-                    </button>
-                  )}
+
                 </div>
               )}
             </div>
@@ -671,7 +679,7 @@ export default function Laboratory() {
           {modal === "help" && (
             <>
               <p>
-                Drag a library sample onto the canvas, then drop it onto another
+                In hard mode, choose a subatomic particle and build a neutral atom to unlock its sample. Drag a library sample onto the canvas, then drop it onto another
                 sample. You can also click a library entry to place it.
               </p>
               <p>
@@ -733,26 +741,12 @@ export default function Laboratory() {
           )}
           {modal === "build" && (
             <Builder
-              onBuild={(id, label) => {
-                const s = catalog.get(id)!;
+              first={firstParticle}
+              onBuild={(atom) => {
                 checkpoint();
-                edit((l) => ({
-                  ...l,
-                  discoveries: discover(l, s),
-                  items: [...l.items, sample(id, 45, 48)],
-                  log: [
-                    {
-                      title: label,
-                      detail: "Built an atom and added an elemental sample.",
-                      time: Date.now(),
-                      productId: id,
-                      success: true,
-                    },
-                    ...l.log,
-                  ].slice(0, 150),
-                }));
+                edit((l) => addBuiltAtom(l, atom));
                 setModal(null);
-                setMessage("Atom built · " + label);
+                setMessage(atom.element.name + " added to the canvas and library.");
               }}
             />
           )}

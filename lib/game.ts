@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sampleFormula, substances, type Substance } from "./chem";
+import { buildAtom, sampleFormula, substances, type Substance } from "./chem";
 
 export type Mode = "easy" | "hard";
 export interface Sample {
@@ -62,7 +62,7 @@ export function freshLab(mode: Mode): Lab {
 }
 export function initialGame(): Game {
   return {
-    mode: "easy",
+    mode: "hard",
     grid: true,
     easy: freshLab("easy"),
     hard: freshLab("hard"),
@@ -131,6 +131,25 @@ export function discover(lab: Lab, item: Substance) {
     ? lab.discoveries
     : [...lab.discoveries, item];
 }
+export type BuiltAtom = ReturnType<typeof buildAtom>;
+
+export function addBuiltAtom(lab: Lab, atom: BuiltAtom): Lab {
+  if (atom.charge !== 0) throw new Error("Crafting requires a neutral atom.");
+  const element = substances.find((s) => s.id === atom.element.id)!;
+  const item = sample(element.id, 28 + ((lab.items.length * 32) % 48), 45 + ((lab.items.length * 13) % 25));
+  return {
+    items: [...lab.items, item],
+    discoveries: discover(lab, element),
+    log: [{
+      title: atom.element.name + "–" + atom.massNumber,
+      detail: "Built a neutral atom and added an elemental sample.",
+      time: Date.now(),
+      productId: element.id,
+      success: true,
+    }, ...lab.log].slice(0, 150),
+  };
+}
+
 export const subscript = (s: string) =>
   s.replace(/\d/g, (c) => "₀₁₂₃₄₅₆₇₈₉"[Number(c)]);
 export function formulaFor(s: Substance) {
