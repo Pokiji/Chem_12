@@ -497,11 +497,29 @@ option {
 }
 .particle-shelf > div { display: flex; flex-wrap: wrap; gap: 6px; }
 .particle-shelf button {
+  touch-action: none;
+  user-select: none;
+  cursor: grab;
   border: 1px solid var(--line);
   border-radius: 6px;
   padding: 6px 9px;
   gap: 6px;
 }
+.particle-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 6px;
+  width: 48px;
+  height: 48px;
+  border: 1px solid #5883a8;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 25%, #416784, #22364b 75%);
+  color: #e0f2ff;
+  font-size: 21px;
+}
+.model .particle-mark svg { width: 22px; height: 22px; }
+.particle-mark sup { align-self: flex-start; margin-top: 9px; font-size: 11px; }
 .particle-shelf b { color: #aad3fc; }
 .empty-canvas {
   padding: 14px;

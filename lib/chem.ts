@@ -89,6 +89,36 @@ export function deterministicRule(a: string, b: string): CombinationResult | und
   return { classification: 'no-reaction', equation: '', conditions: 'Ordinary conditions', explanation }
 }
 
+export interface ParticleCounts {
+  protons: number
+  neutrons: number
+  electrons: number
+}
+
+export const supplies = {
+  Proton: { protons: 1, neutrons: 0, electrons: 0 },
+  Neutron: { protons: 0, neutrons: 1, electrons: 0 },
+  Electron: { protons: 0, neutrons: 0, electrons: 1 },
+} satisfies Record<string, ParticleCounts>
+
+export function supplyCounts(id: string): ParticleCounts | undefined {
+  if (Object.hasOwn(supplies, id)) return supplies[id as keyof typeof supplies]
+}
+
+// Groups without a nucleus can wait on the canvas for a proton.
+export function identifyAssembly({ protons, neutrons, electrons }: ParticleCounts) {
+  if (protons === 0) {
+    if (![neutrons, electrons].every(Number.isSafeInteger) ||
+        neutrons < 0 || neutrons > 200 || electrons < 0 || electrons > 1 ||
+        neutrons + electrons === 0) {
+      throw new RangeError('This particle group exceeds the supported counts.')
+    }
+    return 'particle-group'
+  }
+  const atom = buildAtom(protons, neutrons, electrons)
+  return atom.charge === 0 ? atom.element.id : 'particle-group'
+}
+
 export function buildAtom(protons: number, neutrons: number, electrons: number) {
   if (![protons, neutrons, electrons].every(Number.isSafeInteger)) {
     throw new RangeError('Particle counts must be whole numbers.')

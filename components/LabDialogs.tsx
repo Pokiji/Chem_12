@@ -42,19 +42,14 @@ export function Dialog({
     </dialog>
   );
 }
-export const particles = ["Proton", "Neutron", "Electron"] as const;
-export type Particle = (typeof particles)[number];
-
 export function Builder({
-  first,
   onBuild,
 }: {
-  first: Particle | null;
   onBuild: (atom: BuiltAtom) => void;
 }) {
-  const [p, setP] = useState(first === "Proton" ? 1 : 0),
-    [n, setN] = useState(first === "Neutron" ? 1 : 0),
-    [e, setE] = useState(first === "Electron" ? 1 : 0);
+  const [p, setP] = useState(0),
+    [n, setN] = useState(0),
+    [e, setE] = useState(0);
   let atom: ReturnType<typeof buildAtom> | undefined,
     error = "";
   try {

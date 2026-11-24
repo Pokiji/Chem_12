@@ -14,7 +14,7 @@ npm run dev
 Open **http://localhost:3000**. No credentials are needed for guest play.
 
 - **Easy mode** opens with the 118-element library and a few samples already on the canvas. Drag hydrogen onto oxygen to discover water. Inspect the resulting sample to see its formula, activation requirement in its discovery record, and chemistry concept.
-- **Hard mode** is the default for new games. Choose a reusable proton, neutron, or electron above the canvas to start the atom builder. Assemble hydrogen-1 with one proton and one electron. Choose a representative isotope preset or enter proton, neutron, and electron counts directly. Creating a neutral atom unlocks its elemental sample for crafting.
+- **Hard mode** is the default for new games. Drag a proton onto the canvas and drop an electron on it to make hydrogen-1. Keep adding particles to change the isotope, charge, or element. Click or press Enter on a supply to place it, then select a group and its partner to combine. The Build atom dialog also offers isotope presets and numeric entry. Creating a neutral atom unlocks its elemental sample for crafting.
 - **Keyboard and touch** support selecting library entries to place them. Open a canvas sample, choose **Combine with…**, then select its partner.
 - **Journal** records experiment outcomes for the selected mode. Returning to the same browser restores its workspace, discoveries, and journal. Undo restores workspace positions and samples. Discoveries remain in the collection.
 - **Settings** controls the grid and resets the selected mode after confirmation.
@@ -70,4 +70,3 @@ Reaction cards model relative amounts under the stated conditions. The workspace
 Guest progress lives in one browser origin. The account tables provide a foundation for future cloud synchronization. Future work can extend the recipe model to multiple products and explicit environmental conditions, add account sync, and introduce equipment, materials, and richer atomic visualizations.
 
 [Agent instructions](AGENTS.md) · [Technical handoff](docs/LLM_CONTEXT.md)
-
