@@ -28,6 +28,7 @@ import {
   X,
 } from "lucide-react";
 import {
+  acidBaseFamily,
   supplies,
   supplyCounts,
   type ParticleCounts,
@@ -172,7 +173,9 @@ export default function Laboratory() {
   const choices = owned.filter(
     (s) =>
       (filter === "All" ||
-        s.category === (filter === "Elements" ? "Element" : "Compound")) &&
+        (filter === "Elements" && s.category === "Element") ||
+        (filter === "Compounds" && s.category === "Compound") ||
+        filter === acidBaseFamily.get(s.id) + "s") &&
       (s.name + " " + s.formula).toLowerCase().includes(query.toLowerCase()),
   );
   if (sorted) choices.sort((a, b) => a.name.localeCompare(b.name));
@@ -445,7 +448,7 @@ export default function Laboratory() {
               />
             </label>
             <div className="filters">
-              {["All", "Elements", "Compounds"].map((f) => (
+              {["All", "Elements", "Compounds", "Acids", "Bases"].map((f) => (
                 <button
                   key={f}
                   aria-pressed={filter === f}
@@ -477,12 +480,15 @@ export default function Laboratory() {
                 </span>
                 <span className="sub-text">
                   <b>{s.name}</b>
-                  <small>{elemental.get(s.id)?.category ?? s.category}</small>
+                  <small>{elemental.get(s.id)?.category ?? acidBaseFamily.get(s.id) ?? s.category}</small>
                 </span>
               </button>
             ))}
             {!choices.length && (
-              <p className="muted">{owned.length ? "No matching substances." : "Atoms you build will appear here."}</p>
+              <p className="muted">{query ? "No matching substances."
+                : filter === "Acids" ? "Try combining carbon dioxide with water."
+                : filter === "Bases" ? "Try combining magnesium oxide with water."
+                : owned.length ? "No matching substances." : "Atoms you build will appear here."}</p>
             )}
           </div>
           <button

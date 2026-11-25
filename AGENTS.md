@@ -29,5 +29,5 @@ Apply database changes as versioned migrations. Preserve unique pair keys, atomi
 
 Run `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build`. Test a fresh guest session, restore after refresh, Hard Mode atom creation, drag collision, and click-to-combine when changing interactions. Verify a timed-out inference request leaves both inputs available.
 
-The guest MVP, 18 verified recipes, secure inference adapter, database schema, and optional cache are implemented. Account sign-in and cloud sync are future work. Update the handoff when changing system boundaries or supported chemistry. [Handoff](docs/LLM_CONTEXT.md)
+The guest MVP, 23 verified recipes, secure inference adapter, database schema, and optional cache are implemented. Account sign-in and cloud sync are future work. Update the handoff when changing system boundaries or supported chemistry. [Handoff](docs/LLM_CONTEXT.md)
 

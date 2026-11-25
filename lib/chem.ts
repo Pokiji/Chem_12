@@ -61,6 +61,12 @@ export const substances: Substance[] = [
   })),
 ]
 
+// Library labels describe the curated acid and base discoveries in water.
+export const acidBaseFamily = new Map<string, 'Acid' | 'Base'>([
+  ['carbonic-acid', 'Acid'], ['sulfuric-acid', 'Acid'],
+  ['ammonia', 'Base'], ['calcium-hydroxide', 'Base'], ['magnesium-hydroxide', 'Base'],
+])
+
 export function canonicalKey(a: string, b: string) {
   return [a, b].sort().join('|')
 }

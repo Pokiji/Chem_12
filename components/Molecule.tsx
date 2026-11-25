@@ -34,6 +34,9 @@ function pigment(id: string) {
 }
 
 const pair = (a: string, b = a): Model => [[72, 41, 23, b], [42, 61, 27, a]];
+const hydroxide = (metal: string): Model => [
+  [79,32,10,"h"], [70,40,17,"o"], [56,54,23,metal], [37,69,17,"o"], [28,76,10,"h"],
+];
 const lattice = (a: string, b = a): Model => [
   [56, 26, 15, a], [78, 35, 16, b], [36, 40, 17, b], [58, 50, 19, a],
   [79, 62, 18, b], [37, 68, 18, a], [59, 77, 17, b],
@@ -51,7 +54,12 @@ const models: Record<string, Model> = {
   "magnesium-oxide": lattice("mg", "o"), "calcium-oxide": lattice("ca", "o"),
   "copper-oxide": lattice("cu","o"), "silicon-dioxide": lattice("si", "o"),
   "calcium-carbonate": [[73,32,18,"o"],[44,36,15,"o"],[59,53,18,"c"],[37,64,18,"o"],[78,67,22,"ca"]],
-  "calcium-hydroxide": [[79,32,10,"h"],[70,40,17,"o"],[56,54,23,"ca"],[37,69,17,"o"],[28,76,10,"h"]],
+  "calcium-hydroxide": hydroxide("ca"),
+  "magnesium-hydroxide": hydroxide("mg"),
+  "carbonic-acid": [[59,25,15,"o"],[59,48,17,"c"],[36,62,16,"o"],[23,52,9,"h"],[81,62,16,"o"],[89,77,9,"h"]],
+  "sulfur-dioxide": [[34,63,18,"o"],[59,43,21,"s"],[84,63,18,"o"]],
+  "sulfur-trioxide": [[59,24,17,"o"],[59,49,20,"s"],[34,65,17,"o"],[84,65,17,"o"]],
+  "sulfuric-acid": [[38,33,15,"o"],[76,32,15,"o"],[59,51,20,"s"],[36,65,15,"o"],[24,74,8,"h"],[81,65,15,"o"],[92,74,8,"h"]],
   ammonia: [[71,34,13,"h"],[58,50,24,"n"],[78,68,14,"h"],[36,67,15,"h"]],
   methane: [[61,27,13,"h"],[79,43,14,"h"],[57,52,24,"c"],[71,73,15,"h"],[35,62,16,"h"]],
 };

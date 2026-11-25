@@ -18,12 +18,13 @@ Open **http://localhost:3000**. No credentials are needed for guest play.
 - **Keyboard and touch** support selecting library entries to place them. Open a canvas sample, choose **Combine with…**, then select its partner.
 - **Journal** records experiment outcomes for the selected mode. Returning to the same browser restores its workspace, discoveries, and journal. Undo restores workspace positions and samples. Discoveries remain in the collection.
 - **Settings** controls the grid and resets the selected mode after confirmation.
+- **Acids and bases** appear in the library as you discover them. Combine water with carbon dioxide to make carbonic acid, or with magnesium oxide to make magnesium hydroxide. Inspect the product to see how it behaves in water.
 
 ## Systems
 
 | Area | Implementation |
 | --- | --- |
-| Scientific catalog | 118 elements, a NUBASE2020 isotope snapshot, and 18 curated single-product reactions |
+| Scientific catalog | 118 elements, a NUBASE2020 isotope snapshot, and 23 curated single-product reactions |
 | Game engine | Shared deterministic atom construction, unordered recipe matching, and qualitative reaction conditions |
 | Workspace | React pointer events, responsive layouts, local molecular illustrations and guest persistence |
 | API | Next.js Node route handlers, bounded JSON parsing, Zod validation |

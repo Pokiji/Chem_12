@@ -206,6 +206,7 @@ option {
 }
 .filters {
   display: flex;
+  flex-wrap: wrap;
   gap: 3px;
   background: #101216;
   border-radius: 6px;
@@ -213,7 +214,7 @@ option {
   border: 1px solid #292c33;
 }
 .filters button {
-  flex: 1;
+  flex: 1 0 28%;
   font-size: 12px;
   color: #a2aab6;
   padding: 4px 5px;
@@ -246,7 +247,8 @@ option {
   background: #20242b;
 }
 .symbol {
-  width: 35px;
+  min-width: 35px;
+  padding-inline: 3px;
   height: 35px;
   border: 1px solid;
   border-radius: 7px;

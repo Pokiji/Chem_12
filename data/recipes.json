@@ -176,7 +176,7 @@
     ],
     "equation": "N2 + 3H2 → 2NH3",
     "conditions": "Industrial catalytic synthesis under elevated pressure.",
-    "concept": "Nitrogen shares three pairs of electrons with hydrogen atoms.",
+    "concept": "Nitrogen shares three pairs of electrons with hydrogen atoms. In water, ammonia acts as a weak base. A small fraction of its molecules accept a proton from water, forming ammonium and hydroxide ions.",
     "uses": "A starting material for nitrogen fertilizers."
   },
   {
@@ -196,7 +196,7 @@
     ],
     "equation": "CaO + H2O → Ca(OH)2",
     "conditions": "Hydration of calcium oxide.",
-    "concept": "Calcium ions balance pairs of hydroxide ions.",
+    "concept": "Calcium ions balance pairs of hydroxide ions. Calcium hydroxide is a strong base. Only a limited amount dissolves in water, but the dissolved portion dissociates into calcium and hydroxide ions.",
     "uses": "Used in traditional lime mortar."
   },
   {
@@ -358,5 +358,105 @@
     "conditions": "Elemental lithium in contact with nitrogen.",
     "concept": "Three lithium ions balance a nitride ion.",
     "uses": "Studied as an ionic conductor."
+  },
+  {
+    "a": "carbon-dioxide",
+    "b": "water",
+    "productId": "carbonic-acid",
+    "name": "Carbonic acid",
+    "formula": "H2CO3",
+    "reactantFormulas": [
+      "CO2",
+      "H2O"
+    ],
+    "coefficients": [
+      1,
+      1,
+      1
+    ],
+    "equation": "CO2 + H2O ⇌ H2CO3",
+    "conditions": "In liquid water, only a small fraction of dissolved carbon dioxide hydrates at equilibrium.",
+    "concept": "Carbonic acid is a weak acid. It can donate a proton to water, forming bicarbonate and hydronium ions.",
+    "uses": "Helps explain the acidity of carbonated water."
+  },
+  {
+    "a": "magnesium-oxide",
+    "b": "water",
+    "productId": "magnesium-hydroxide",
+    "name": "Magnesium hydroxide",
+    "formula": "Mg(OH)2",
+    "reactantFormulas": [
+      "MgO",
+      "H2O"
+    ],
+    "coefficients": [
+      1,
+      1,
+      1
+    ],
+    "equation": "MgO + H2O → Mg(OH)2",
+    "conditions": "Solid magnesium oxide hydrates on contact with liquid water. The reaction can be slow.",
+    "concept": "Magnesium hydroxide is a sparingly soluble base. The small amount that dissolves supplies hydroxide ions to water.",
+    "uses": "Used in antacids to neutralize excess stomach acid."
+  },
+  {
+    "a": "sulfur",
+    "b": "oxygen",
+    "productId": "sulfur-dioxide",
+    "name": "Sulfur dioxide",
+    "formula": "SO2",
+    "reactantFormulas": [
+      "S8",
+      "O2"
+    ],
+    "coefficients": [
+      1,
+      8,
+      8
+    ],
+    "equation": "S8 + 8O2 → 8SO2",
+    "conditions": "Sulfur burns in oxygen after ignition.",
+    "concept": "Sulfur gains bonds to oxygen as its oxidation state rises from zero to +4.",
+    "uses": "An intermediate in sulfuric acid manufacture."
+  },
+  {
+    "a": "sulfur-dioxide",
+    "b": "oxygen",
+    "productId": "sulfur-trioxide",
+    "name": "Sulfur trioxide",
+    "formula": "SO3",
+    "reactantFormulas": [
+      "SO2",
+      "O2"
+    ],
+    "coefficients": [
+      2,
+      1,
+      2
+    ],
+    "equation": "2SO2 + O2 ⇌ 2SO3",
+    "conditions": "At elevated temperature, a vanadium(V) oxide catalyst speeds the approach to equilibrium.",
+    "concept": "Sulfur is oxidized from +4 to +6. The catalyst speeds both directions of the reaction.",
+    "uses": "Used to manufacture sulfuric acid."
+  },
+  {
+    "a": "sulfur-trioxide",
+    "b": "water",
+    "productId": "sulfuric-acid",
+    "name": "Sulfuric acid",
+    "formula": "H2SO4",
+    "reactantFormulas": [
+      "SO3",
+      "H2O"
+    ],
+    "coefficients": [
+      1,
+      1,
+      1
+    ],
+    "equation": "SO3 + H2O → H2SO4",
+    "conditions": "Sulfur trioxide reacts strongly with moisture, releasing heat and forming acid mist.",
+    "concept": "Sulfuric acid is a strong acid. In water it readily donates its first proton, forming hydrogen sulfate. Only a fraction of these ions donate their remaining proton.",
+    "uses": "Used in phosphate fertilizer production."
   }
 ]
