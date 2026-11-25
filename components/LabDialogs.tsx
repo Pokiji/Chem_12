@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { X, FlaskConical } from "lucide-react";
-import { buildAtom, elements, type Substance } from "../lib/chem";
+import { acidBaseFamily, buildAtom, elements, type Substance } from "../lib/chem";
 import { Molecule, colorFor } from "./Molecule";
 import { formulaFor, type BuiltAtom, type Entry } from "../lib/game";
 
@@ -182,7 +182,7 @@ export function Details({
   add?: () => void;
 }) {
   const el = elements.find((x) => x.id === s.id),
-    entry = log.find((x) => x.productId === s.id);
+    entry = log.find((x) => x.productId === s.id || x.productIds?.includes(s.id));
   return (
     <>
       <div className="detail-model">
@@ -196,7 +196,7 @@ export function Details({
       <dl>
         {Object.entries({
           Classification: s.classification,
-          Family: el?.category,
+          Family: el?.category ?? acidBaseFamily.get(s.id),
           "Atomic number": el?.number,
           "Atomic mass": el?.massDisplay,
           "Common oxidation states": el?.oxidationStates.join(", "),

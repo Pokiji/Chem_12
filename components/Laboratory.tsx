@@ -33,6 +33,7 @@ import {
   supplyCounts,
   type ParticleCounts,
   combineCurated,
+  reactionProducts,
   deterministicRule,
   elements,
   recipes,
@@ -45,6 +46,7 @@ import {
   addBuiltAtom,
   discover,
   formulaFor,
+  placeProducts,
   freshLab,
   initialGame,
   restore,
@@ -192,7 +194,8 @@ export default function Laboratory() {
   function drop(source: Sample, destination: Sample) {
     if (pending.current) return;
     if (source.id !== "particle-group" && destination.id !== "particle-group") {
-      void combine(source.id, destination.id, [source.key, destination.key], destination.x, destination.y);
+      const consumed = lab.items.filter(i => i.key === source.key || i.key === destination.key);
+      void combine(source.id, destination.id, consumed.map(i => i.key), destination.x, destination.y);
       return;
     }
     setTarget(null);
@@ -220,6 +223,7 @@ export default function Laboratory() {
     setTarget(null);
     try {
       let result = combineCurated(first, second);
+      if (!result && [first, second].some(id => catalog.get(id)?.category === "Ion")) result = deterministicRule(first, second);
       if (!result) {
         try {
           const res = await fetch("/api/combinations", {
@@ -244,13 +248,14 @@ export default function Laboratory() {
         }
       }
       const outcome = result!,
-        product = outcome.product,
-        newItem = product && sample(product.id, x, y);
-      if (product) {
+        products = reactionProducts(outcome);
+      const rect = canvas.current!.getBoundingClientRect();
+      const newItems = placeProducts(products, x, y, rect.width, rect.height, lab.items.filter(i => !remove.includes(i.key)));
+      if (newItems.length) {
         checkpoint();
-        setFlash(newItem!.key);
+        setFlash(newItems[0].key);
       }
-      const title = product ? product.name : "No supported reaction";
+      const title = products.length ? products.map(p => p.name).join(" + ") : "No supported reaction";
       const detail = [outcome.equation, outcome.conditions, outcome.explanation]
         .filter(Boolean)
         .join(" · ");
@@ -258,20 +263,20 @@ export default function Laboratory() {
         time: Date.now(),
         title,
         detail,
-        success: !!product,
-        productId: product?.id,
+        success: !!products.length,
+        ...(products.length > 1 ? { productIds: products.map(p => p.id) } : { productId: products[0]?.id }),
       };
-      edit((l) => ({
+      edit((l) => remove.every(key => l.items.some(i => i.key === key)) ? ({
         ...l,
-        items: newItem
-          ? [...l.items.filter((i) => !remove.includes(i.key)), newItem]
+        items: newItems.length
+          ? [...l.items.filter((i) => !remove.includes(i.key)), ...newItems]
           : l.items,
-        discoveries: product ? discover(l, product) : l.discoveries,
+        discoveries: products.reduce((discoveries, p) => discover({ ...l, discoveries }, p), l.discoveries),
         log: [entry, ...l.log].slice(0, 150),
-      }));
+      }) : l);
       setMessage(
-        product
-          ? product.name + " · " + outcome.equation + " · " + outcome.conditions
+        products.length
+          ? title + " · " + outcome.equation + " · " + (outcome.products ? outcome.explanation : outcome.conditions)
           : outcome.explanation,
       );
     } finally {
@@ -476,7 +481,7 @@ export default function Laboratory() {
                     borderColor: colorFor(s.id) + "35",
                   }}
                 >
-                  {s.formula}
+                  {s.category === "Ion" ? formulaFor(s) : s.formula}
                 </span>
                 <span className="sub-text">
                   <b>{s.name}</b>

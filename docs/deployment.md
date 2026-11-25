@@ -6,7 +6,7 @@ Import the repository into Vercel as a Next.js project using `npm run build`. Co
 
 ## Supabase and Redis
 
-Apply supabase/migrations/001_little_chemistry.sql in the Supabase SQL editor. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel and a local .env.local file. Run `node --env-file=.env.local scripts/seed.mjs` from the repository root. The idempotent seed uploads the periodic table, catalog and recipes. Generated products and their unordered pair are persisted in one transaction. Owner-only row policies protect the optional account tables.
+Apply the files in `supabase/migrations/` in numeric order in the Supabase SQL editor. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel and a local .env.local file. Run `node --env-file=.env.local scripts/seed.mjs` from the repository root. The idempotent seed uploads the periodic table, catalog and recipes. Generated products and their unordered pair are persisted in one transaction. Owner-only row policies protect the optional account tables.
 
 Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN from Upstash Redis. Hot combinations expire after one day. Vercel requires Redis for inference limits of six generations per client per minute. Local development uses a process counter. Without Supabase generated items are reusable only while the server retains their catalog entries.
 

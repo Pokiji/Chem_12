@@ -48,6 +48,8 @@ const models: Record<string, Model> = {
   c: lattice("c"), fe: lattice("fe"), na: lattice("na"), cu: lattice("cu"),
   s: [[39,31,13,"s"],[59,24,14,"s"],[78,33,14,"s"],[86,51,14,"s"],
       [31,51,15,"s"],[38,70,16,"s"],[75,69,16,"s"],[57,77,16,"s"]],
+  hydroxide: [[70,47,26,"o"],[42,62,16,"h"]],
+  hydronium: [[72,35,14,"h"],[57,49,24,"o"],[79,66,15,"h"],[35,65,16,"h"]],
   water: [[79, 67, 16, "h"], [58, 44, 26, "o"], [34, 67, 17, "h"]],
   "carbon-dioxide": [[86, 38, 19, "o"], [58, 51, 19, "c"], [30, 64, 21, "o"]],
   "sodium-chloride": lattice("na", "cl"), "iron-sulfide": lattice("fe", "s"),

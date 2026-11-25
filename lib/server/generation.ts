@@ -26,6 +26,7 @@ export interface ChemistryGenerationProvider {
 
 export class OllamaChemistryProvider implements ChemistryGenerationProvider {
   async propose(a:Substance,b:Substance):Promise<CombinationResult|null> {
+    if (a.category === 'Ion' || b.category === 'Ion') return null
     const url=process.env.CHEM_GATEWAY_URL, token=process.env.CHEM_GATEWAY_TOKEN
     if (!url || !token) return null
     const endpoint=new URL(url)

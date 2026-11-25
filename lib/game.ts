@@ -15,6 +15,7 @@ export interface Entry {
   detail: string;
   success: boolean;
   productId?: string;
+  productIds?: string[];
 }
 export interface Lab {
   items: Sample[];
@@ -50,6 +51,23 @@ export const sample = (id: string, x: number, y: number): Sample => {
     y,
   };
 };
+// In a crowded workspace, prefer the closest free cell to the reaction.
+export function placeProducts(products: Substance[], x: number, y: number, width: number, height: number, remaining: Sample[] = []) {
+  if (products.length <= 1) return products.map(p => sample(p.id, x, y));
+  const columns = Math.max(1, Math.floor(width / 156));
+  const rows = Math.max(Math.ceil(products.length / columns), Math.floor(height / 156));
+  const cells = Array.from({ length: columns * rows }, (_, i) => ({
+    x: (i % columns + 0.5) * 100 / columns,
+    y: (Math.floor(i / columns) + 0.5) * 100 / rows,
+  }));
+  const distance = (cell: typeof cells[number]) => Math.hypot((cell.x - x) * width, (cell.y - y) * height);
+  const overlaps = (cell: typeof cells[number]) => remaining.filter(item =>
+    Math.abs(item.x - cell.x) * width / 100 < 156 && Math.abs(item.y - cell.y) * height / 100 < 156
+  ).length;
+  const ranked = cells.map(cell => ({ ...cell, collisions: overlaps(cell), distance: distance(cell) }))
+    .sort((a, b) => a.collisions - b.collisions || a.distance - b.distance);
+  return products.map((p, i) => sample(p.id, ranked[i].x, ranked[i].y));
+}
 export function freshLab(mode: Mode): Lab {
   return {
     items:
@@ -110,6 +128,7 @@ const lab = z.object({
       detail: z.string(),
       success: z.boolean(),
       productId: z.string().optional(),
+      productIds: z.array(z.string()).optional(),
     }),
   ),
 });
@@ -185,5 +204,5 @@ export function assemble(lab: Lab, source: Sample, target: Sample): Lab {
 export const subscript = (s: string) =>
   s.replace(/\d/g, (c) => "₀₁₂₃₄₅₆₇₈₉"[Number(c)]);
 export function formulaFor(s: Substance) {
-  return subscript(sampleFormula(s));
+  return subscript(sampleFormula(s)).replace(/\+$/, "⁺").replace(/-$/, "⁻");
 }

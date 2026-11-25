@@ -458,5 +458,27 @@
     "conditions": "Sulfur trioxide reacts strongly with moisture, releasing heat and forming acid mist.",
     "concept": "Sulfuric acid is a strong acid. In water it readily donates its first proton, forming hydrogen sulfate. Only a fraction of these ions donate their remaining proton.",
     "uses": "Used in phosphate fertilizer production."
+  },
+  {
+    "a": "water",
+    "b": "water",
+    "productIds": [
+      "hydronium",
+      "hydroxide"
+    ],
+    "equation": "2H₂O ⇌ H₃O⁺ + OH⁻",
+    "conditions": "Liquid water at equilibrium.",
+    "concept": "One water molecule transfers a proton to another. Only a very small fraction of liquid water is ionized at equilibrium."
+  },
+  {
+    "a": "hydronium",
+    "b": "hydroxide",
+    "productIds": [
+      "water",
+      "water"
+    ],
+    "equation": "H₃O⁺ + OH⁻ ⇌ 2H₂O",
+    "conditions": "Liquid water at equilibrium.",
+    "concept": "Hydroxide accepts a proton from hydronium, forming two water molecules. The equilibrium strongly favors water."
   }
 ]

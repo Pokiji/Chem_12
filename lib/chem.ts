@@ -18,6 +18,7 @@ export interface Substance {
   uses?: string
 }
 export interface CombinationResult {
+  products?: Substance[]
   product?: Substance
   classification: Classification
   equation: string
@@ -33,7 +34,12 @@ export function sampleFormula(s: Substance) {
   return s.category === 'Element' ? molecularForms[s.formula] ?? s.formula : s.formula
 }
 
-export const recipes = recipeRows.map(recipe => ({ ...recipe, product: recipe.productId }))
+export function reactionProducts(result: CombinationResult): Substance[] {
+  return result.products ?? (result.product ? [result.product] : [])
+}
+
+export const equilibriumRecipes = recipeRows.filter(r => r.productIds !== undefined)
+export const recipes = recipeRows.filter(r => r.productId !== undefined).map(recipe => ({ ...recipe, product: recipe.productId }))
 
 const ambientDescriptions: Record<string, string> = {
   hydrogen: 'The lightest element. In its ordinary gaseous form, hydrogen atoms travel in pairs.',
@@ -59,11 +65,17 @@ export const substances: Substance[] = [
     description: r.concept, concept: r.concept, uses: r.uses, classification: 'verified',
     source: 'curated', icon: { type: 'local', name: r.productId === 'water' ? 'droplets' : 'molecule' },
   })),
+  ...[
+    { id: 'hydronium', name: 'Hydronium', formula: 'H3O+', description: 'Water gains a proton to form hydronium, its conjugate acid.' },
+    { id: 'hydroxide', name: 'Hydroxide', formula: 'OH-', description: 'Water loses a proton to form hydroxide, its conjugate base.' },
+  ].map((ion): Substance => ({ ...ion, category: 'Ion', classification: 'verified', source: 'curated',
+    icon: { type: 'local', name: 'molecule' } })),
 ]
 
 // Library labels describe the curated acid and base discoveries in water.
 export const acidBaseFamily = new Map<string, 'Acid' | 'Base'>([
   ['carbonic-acid', 'Acid'], ['sulfuric-acid', 'Acid'],
+  ['hydronium', 'Acid'], ['hydroxide', 'Base'],
   ['ammonia', 'Base'], ['calcium-hydroxide', 'Base'], ['magnesium-hydroxide', 'Base'],
 ])
 
@@ -71,21 +83,25 @@ export function canonicalKey(a: string, b: string) {
   return [a, b].sort().join('|')
 }
 
-const recipeIndex = new Map(recipes.map(r => [canonicalKey(r.a, r.b), r]))
+const recipeIndex = new Map(recipeRows.map(r => [canonicalKey(r.a, r.b), r]))
 const substanceIndex = new Map(substances.map(item => [item.id, item]))
 
 export function combineCurated(a: string, b: string): CombinationResult | undefined {
   const recipe = recipeIndex.get(canonicalKey(a, b))
   if (!recipe) return
   return {
-    product: substanceIndex.get(recipe.productId), classification: 'verified',
+    ...(recipe.productIds ? { products: recipe.productIds.map(id => substanceIndex.get(id)!) }
+      : { product: substanceIndex.get(recipe.productId) }),
+    classification: 'verified',
     equation: recipe.equation, conditions: recipe.conditions, explanation: recipe.concept,
   }
 }
 
 export function deterministicRule(a: string, b: string): CombinationResult | undefined {
   let explanation: string
-  if (a === b) {
+  if ([a, b].some(id => substanceIndex.get(id)?.category === 'Ion')) {
+    explanation = 'No curated proton transfer is available for this pair.'
+  } else if (a === b) {
     explanation = 'Two samples of the same substance represent a larger sample under these conditions.'
   } else if ([a, b].some(id => id === 'helium' || id === 'neon')) {
     explanation = 'Helium and neon have filled outer electron shells. No ordinary reaction is represented for this pair.'

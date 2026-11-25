@@ -19,7 +19,7 @@ Use strict TypeScript, plain serializable data, and the existing domain types. K
 
 Each element record must occupy its atomic-number position. The current catalog covers all 118 recognized elements. Use the documented CIAAW mass convention, source isotope changes, and update the source snapshot notes. Empty oxidation-state arrays indicate unavailable common states.
 
-To add a recipe, edit `data/recipes.json` with two catalog IDs, matching reactant formulas, a stable product ID, coefficients, a balanced equation, appropriate conditions, a concept, and an application. Check the source supports the product and conditions. Preserve atom counts and charge. The present neutral single-product engine requires extension before introducing ion-specific or multi-product chemistry. Add a named rendering model when useful and re-run the seed for database-backed deployments.
+To add a recipe, edit `data/recipes.json` with two catalog IDs, matching reactant formulas, a stable product ID, coefficients, a balanced equation, appropriate conditions, a concept, and an application. Check the source supports the product and conditions. Preserve atom counts and charge. Curated molecular events may specify ordered productIds, repeating an ID for each output instance. Generated proposals require neutral inputs and a single neutral product. Add a named rendering model when useful and re-run the seed for database-backed deployments.
 
 Model output is an untrusted proposal. Restrict input length, time, JSON schema, coefficients, formula grammar and icon vocabulary. Recheck conservation before persistence. Only curated evidence can grant verified status. Keep gateway credentials on the server. Render strings through React text nodes.
 
@@ -29,5 +29,5 @@ Apply database changes as versioned migrations. Preserve unique pair keys, atomi
 
 Run `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build`. Test a fresh guest session, restore after refresh, Hard Mode atom creation, drag collision, and click-to-combine when changing interactions. Verify a timed-out inference request leaves both inputs available.
 
-The guest MVP, 23 verified recipes, secure inference adapter, database schema, and optional cache are implemented. Account sign-in and cloud sync are future work. Update the handoff when changing system boundaries or supported chemistry. [Handoff](docs/LLM_CONTEXT.md)
+The guest MVP, 23 neutral recipes and both directions of water autoionization, secure inference adapter, database schema, and optional cache are implemented. Account sign-in and cloud sync are future work. Update the handoff when changing system boundaries or supported chemistry. [Handoff](docs/LLM_CONTEXT.md)
 

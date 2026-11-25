@@ -24,7 +24,7 @@ Open **http://localhost:3000**. No credentials are needed for guest play.
 
 | Area | Implementation |
 | --- | --- |
-| Scientific catalog | 118 elements, a NUBASE2020 isotope snapshot, and 23 curated single-product reactions |
+| Scientific catalog | 118 elements, a NUBASE2020 isotope snapshot, and 23 curated single-product reactions plus both directions of water autoionization |
 | Game engine | Shared deterministic atom construction, unordered recipe matching, and qualitative reaction conditions |
 | Workspace | React pointer events, responsive layouts, local molecular illustrations and guest persistence |
 | API | Next.js Node route handlers, bounded JSON parsing, Zod validation |
@@ -45,7 +45,7 @@ Copy `.env.example` to `.env.local` when using external services. Configure the 
 | CF_ACCESS_CLIENT_ID, CF_ACCESS_CLIENT_SECRET | Cloudflare Access service authentication when using the documented tunnel |
 | GATEWAY_PORT | Optional local inference gateway port, default 8787 |
 
-1. Apply `supabase/migrations/001_little_chemistry.sql` to a new Supabase project. Run `npm run seed` with the Supabase credentials in `.env.local`.
+1. Apply the SQL files in `supabase/migrations/` in numeric order. Run `npm run seed` with the Supabase credentials in `.env.local`.
 2. On the inference computer, run `ollama pull llama3.1:8b`. Start the loopback Ollama service, set a shared random gateway token, and run `npm run gateway`.
 3. Set up an outbound authenticated tunnel to the gateway. The browser only calls same-origin API routes.
 4. Import the repository into Vercel with the Next.js preset, configure the server environment, and deploy. Redis credentials are required for production inference. Curated gameplay runs without these services.
@@ -65,6 +65,8 @@ npm start
 Tests exercise atomic identity, charge, isotope coverage, invalid inputs, reaction balance, unordered keys, guest saves, candidate validation, network outages, datastore adapters, and rate limits. Integration tests use mocked network responses.
 
 ## Scope and roadmap
+
+Drag water onto water to discover hydronium (H₃O⁺) and hydroxide (OH⁻). Combining the ions returns two water molecules. Only a very small fraction of real liquid water is ionized at equilibrium.
 
 Reaction cards model relative amounts under the stated conditions. The workspace has no adjustable temperature, pressure, solvent, or reaction kinetics. The atom builder tracks individual isotopes and charges for inspection. Crafting uses bulk, neutral elemental samples. Electron illustrations are schematic and show up to twelve markers. Unknown isotopes are labelled unverified.
 

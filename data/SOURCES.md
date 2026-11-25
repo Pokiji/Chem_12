@@ -15,3 +15,5 @@ The oxide hydration recipes follow the University of Wisconsin tables. Dissolved
 Sulfur combustion supplies sulfur dioxide. Catalytic oxidation supplies sulfur trioxide. The combustion equation uses the catalog's eight-atom sulfur sample. [University of Michigan, oxidation of sulfur dioxide](https://public.websites.umich.edu/~elements/08chap/html/sulfuricacid.pdf)
 
 The inspector distinguishes ammonia's partial proton uptake from hydroxide dissolution and describes sulfuric acid's two proton transfers separately. [Purdue, weak bases](https://www.chem.purdue.edu/gchelp/howtosolveit/Equilibrium/Weak_Bases.htm) · [Purdue, diprotic acids](https://chemed.chem.purdue.edu/genchem/topicreview/bp/ch17/diprotic.php)
+
+Both directions of water autoionization, the signed ion formulas, and the small ionized fraction in liquid water follow [OpenStax Chemistry 2e, §14.1](https://openstax.org/books/chemistry-2e/pages/14-1-bronsted-lowry-acids-and-bases). Each listed product ID represents one molecule or ion in this equilibrium demonstration.

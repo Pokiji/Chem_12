@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { acidBaseFamily, buildAtom, canonicalKey, combineCurated, deterministicRule, elements, recipes, sampleFormula, substances } from '../lib/chem.ts'
+import { acidBaseFamily, buildAtom, canonicalKey, combineCurated, deterministicRule, elements, reactionProducts, recipes, sampleFormula, substances } from '../lib/chem.ts'
 
 test('each atomic number constructs the corresponding representative isotope', () => {
   assert.equal(elements.length, 118)
@@ -79,6 +79,7 @@ test('acid and base discoveries are reachable from element samples', () => {
     assert.equal(result?.product?.category, 'Compound')
     available.add(product)
   }
+  for (const ion of combineCurated('water', 'water')!.products!) available.add(ion.id)
   for (const id of acidBaseFamily.keys()) assert.ok(available.has(id))
 })
 
@@ -97,5 +98,32 @@ test('all curated neutral equations conserve every element and reference catalog
     r.reactantFormulas.forEach((f,i) => counts(f, r.coefficients[i], left))
     counts(r.formula, r.coefficients[2], right)
     assert.deepEqual(left,right,r.equation)
+  }
+})
+
+
+test('both directions conserve every atom and net charge, including repeated water', () => {
+  for (const [a, b, expected] of [
+    ['water', 'water', ['hydronium', 'hydroxide']],
+    ['hydroxide', 'hydronium', ['water', 'water']],
+  ] as const) {
+    const result = combineCurated(a, b)!
+    assert.deepEqual(result, combineCurated(b, a))
+    const inputs = [a,b].map(id => substances.find(s => s.id === id)!)
+    const outputs = reactionProducts(result)
+    assert.deepEqual(outputs.map(s => s.id), expected)
+    const totals = (species: typeof outputs) => {
+      const atoms = new Map<string, number>()
+      let charge = 0
+      for (const s of species) {
+        counts(s.formula, 1, atoms)
+        charge += s.formula.endsWith('+') ? 1 : s.formula.endsWith('-') ? -1 : 0
+      }
+      return { atoms, charge }
+    }
+    assert.deepEqual(totals(inputs), totals(outputs))
+  }
+  for (const recipe of recipes) {
+    assert.deepEqual(reactionProducts(combineCurated(recipe.a, recipe.b)!).map(p => p.id), [recipe.productId])
   }
 })
