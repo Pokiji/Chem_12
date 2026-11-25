@@ -1,5 +1,4 @@
 begin;
-alter table public.chemical_recipes alter column product drop not null;
 
 -- Single-output recipes keep their original foreign key. Multi-output recipes
 -- use one ordered row per canvas sample, including repeated species.
