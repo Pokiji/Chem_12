@@ -14,16 +14,17 @@ npm run dev
 Open **http://localhost:3000**. No credentials are needed for guest play.
 
 - **Easy mode** opens with the 118-element library and a few samples already on the canvas. Drag hydrogen onto oxygen to discover water. Inspect the resulting sample to see its formula, activation requirement in its discovery record, and chemistry concept.
-- **Hard mode** starts with a particle builder. Choose a representative isotope preset or enter proton, neutron, and electron counts directly. Creating an atom unlocks its elemental sample for crafting.
+- **Hard mode** is the default for new games. Drag a proton onto the canvas and drop an electron on it to make hydrogen-1. Keep adding particles to change the isotope, charge, or element. Click or press Enter on a supply to place it, then select a group and its partner to combine. The Build atom dialog also offers isotope presets and numeric entry. Creating a neutral atom unlocks its elemental sample for crafting.
 - **Keyboard and touch** support selecting library entries to place them. Open a canvas sample, choose **Combine with…**, then select its partner.
 - **Journal** records experiment outcomes for the selected mode. Returning to the same browser restores its workspace, discoveries, and journal. Undo restores workspace positions and samples. Discoveries remain in the collection.
 - **Settings** controls the grid and resets the selected mode after confirmation.
+- **Acids and bases** appear in the library as you discover them. Combine water with carbon dioxide to make carbonic acid, or with magnesium oxide to make magnesium hydroxide. Inspect the product to see how it behaves in water.
 
 ## Systems
 
 | Area | Implementation |
 | --- | --- |
-| Scientific catalog | 118 elements, a NUBASE2020 isotope snapshot, and 18 curated single-product reactions |
+| Scientific catalog | 118 elements, a NUBASE2020 isotope snapshot, and 23 curated single-product reactions plus both directions of water autoionization |
 | Game engine | Shared deterministic atom construction, unordered recipe matching, and qualitative reaction conditions |
 | Workspace | React pointer events, responsive layouts, local molecular illustrations and guest persistence |
 | API | Next.js Node route handlers, bounded JSON parsing, Zod validation |
@@ -44,7 +45,7 @@ Copy `.env.example` to `.env.local` when using external services. Configure the 
 | CF_ACCESS_CLIENT_ID, CF_ACCESS_CLIENT_SECRET | Cloudflare Access service authentication when using the documented tunnel |
 | GATEWAY_PORT | Optional local inference gateway port, default 8787 |
 
-1. Apply `supabase/migrations/001_little_chemistry.sql` to a new Supabase project. Run `npm run seed` with the Supabase credentials in `.env.local`.
+1. Apply the SQL files in `supabase/migrations/` in numeric order. Run `npm run seed` with the Supabase credentials in `.env.local`.
 2. On the inference computer, run `ollama pull llama3.1:8b`. Start the loopback Ollama service, set a shared random gateway token, and run `npm run gateway`.
 3. Set up an outbound authenticated tunnel to the gateway. The browser only calls same-origin API routes.
 4. Import the repository into Vercel with the Next.js preset, configure the server environment, and deploy. Redis credentials are required for production inference. Curated gameplay runs without these services.
@@ -65,9 +66,10 @@ Tests exercise atomic identity, charge, isotope coverage, invalid inputs, reacti
 
 ## Scope and roadmap
 
+Drag water onto water to discover hydronium (H₃O⁺) and hydroxide (OH⁻). Combining the ions returns two water molecules. Only a very small fraction of real liquid water is ionized at equilibrium.
+
 Reaction cards model relative amounts under the stated conditions. The workspace has no adjustable temperature, pressure, solvent, or reaction kinetics. The atom builder tracks individual isotopes and charges for inspection. Crafting uses bulk, neutral elemental samples. Electron illustrations are schematic and show up to twelve markers. Unknown isotopes are labelled unverified.
 
 Guest progress lives in one browser origin. The account tables provide a foundation for future cloud synchronization. Future work can extend the recipe model to multiple products and explicit environmental conditions, add account sync, and introduce equipment, materials, and richer atomic visualizations.
 
 [Agent instructions](AGENTS.md) · [Technical handoff](docs/LLM_CONTEXT.md)
-

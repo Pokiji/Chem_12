@@ -7,3 +7,13 @@ The isotope list contains 3,339 ground-state entries with atomic number 1–118 
 Element categories follow conventional classroom families. Oxidation states are illustrative. An empty array means that the catalog supplies no established common state. [PubChem periodic table](https://pubchem.ncbi.nlm.nih.gov/docs/periodic-table-element-pages)
 
 Recipes describe qualitative reaction contexts. The equation records the relative amount of each species represented by the two draggable samples. The atom builder represents individual atoms, while recipes act on samples of neutral elements and compounds. Oxygen and hydrogen feeds use their diatomic forms, and the iron sulfide equation uses molecular sulfur. The tests check atom counts across the full recipe set. [RSC iron and sulfur](https://edu.rsc.org/representing-chemical-reactions/iron-and-sulfur-reaction/713.article) · [RSC sodium and chlorine](https://edu.rsc.org/representing-chemical-reactions/the-reaction-between-sodium-and-chlorine/4015463.article) · [RSC formulas and equations](https://edu.rsc.org/cpd/chemical-formulas-and-equations/3010001.article)
+
+## Acid and base discoveries
+
+The oxide hydration recipes follow the University of Wisconsin tables. Dissolved carbon dioxide is in equilibrium with a small amount of carbonic acid. Magnesium oxide forms sparingly soluble magnesium hydroxide. The sulfur trioxide hydration equation describes the net reaction with moisture. [Wisconsin general chemistry tutorial, tables 5.9–5.11](https://www2.chem.wisc.edu/deptfiles/genchem/sstutorial/Text5/Tx57/tx57.html)
+
+Sulfur combustion supplies sulfur dioxide. Catalytic oxidation supplies sulfur trioxide. The combustion equation uses the catalog's eight-atom sulfur sample. [University of Michigan, oxidation of sulfur dioxide](https://public.websites.umich.edu/~elements/08chap/html/sulfuricacid.pdf)
+
+The inspector distinguishes ammonia's partial proton uptake from hydroxide dissolution and describes sulfuric acid's two proton transfers separately. [Purdue, weak bases](https://www.chem.purdue.edu/gchelp/howtosolveit/Equilibrium/Weak_Bases.htm) · [Purdue, diprotic acids](https://chemed.chem.purdue.edu/genchem/topicreview/bp/ch17/diprotic.php)
+
+Both directions of water autoionization, the signed ion formulas, and the small ionized fraction in liquid water follow [OpenStax Chemistry 2e, §14.1](https://openstax.org/books/chemistry-2e/pages/14-1-bronsted-lowry-acids-and-bases). Each listed product ID represents one molecule or ion in this equilibrium demonstration.

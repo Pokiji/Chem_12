@@ -28,7 +28,12 @@ import {
   X,
 } from "lucide-react";
 import {
+  acidBaseFamily,
+  supplies,
+  supplyCounts,
+  type ParticleCounts,
   combineCurated,
+  reactionProducts,
   deterministicRule,
   elements,
   recipes,
@@ -37,8 +42,11 @@ import {
   type Substance,
 } from "../lib/chem";
 import {
+  assemble,
+  addBuiltAtom,
   discover,
   formulaFor,
+  placeProducts,
   freshLab,
   initialGame,
   restore,
@@ -78,6 +86,20 @@ type Drag = {
   pointer: number;
   moved: boolean;
 };
+function particleLabel(c: ParticleCounts) {
+  if (c.protons + c.neutrons + c.electrons === 1) {
+    return c.protons ? "Proton" : c.neutrons ? "Neutron" : "Electron";
+  }
+  return "Particle group";
+}
+function composition(c: ParticleCounts) {
+  return `${c.protons}p · ${c.neutrons}n · ${c.electrons}e`;
+}
+function particleMark(c: ParticleCounts) {
+  const charge = c.protons - c.electrons;
+  return <span className="particle-mark">{particleLabel(c) === "Particle group" ? <Atom /> : particleLabel(c)[0].toLowerCase()}
+    <sup>{charge > 0 ? "+" + charge : charge}</sup></span>;
+}
 export default function Laboratory() {
   const [game, setGame] = useState<Game>(initialGame),
     [ready, setReady] = useState(false),
@@ -90,7 +112,7 @@ export default function Laboratory() {
   const [message, setMessage] = useState(""),
     [busy, setBusy] = useState(false),
     [target, setTarget] = useState<string | null>(null),
-    [ghost, setGhost] = useState<{ id: string; x: number; y: number } | null>(
+    [ghost, setGhost] = useState<{ id: string; counts?: ParticleCounts; x: number; y: number } | null>(
       null,
     );
   const [undo, setUndo] = useState<Sample[][]>([]),
@@ -146,7 +168,6 @@ export default function Laboratory() {
     setMessage("");
     setQuery("");
     setFilter("All");
-    if (m === "hard" && !game.hard.discoveries.length) setModal("build");
   }
   const owned = (
     mode === "easy" ? ordered.map((id) => catalog.get(id)!) : []
@@ -154,7 +175,9 @@ export default function Laboratory() {
   const choices = owned.filter(
     (s) =>
       (filter === "All" ||
-        s.category === (filter === "Elements" ? "Element" : "Compound")) &&
+        (filter === "Elements" && s.category === "Element") ||
+        (filter === "Compounds" && s.category === "Compound") ||
+        filter === acidBaseFamily.get(s.id) + "s") &&
       (s.name + " " + s.formula).toLowerCase().includes(query.toLowerCase()),
   );
   if (sorted) choices.sort((a, b) => a.name.localeCompare(b.name));
@@ -167,6 +190,25 @@ export default function Laboratory() {
     checkpoint();
     edit((l) => ({ ...l, items: [...l.items, sample(id, x, y)] }));
     setLibrary(false);
+  }
+  function drop(source: Sample, destination: Sample) {
+    if (pending.current) return;
+    if (source.id !== "particle-group" && destination.id !== "particle-group") {
+      const consumed = lab.items.filter(i => i.key === source.key || i.key === destination.key);
+      void combine(source.id, destination.id, consumed.map(i => i.key), destination.x, destination.y);
+      return;
+    }
+    setTarget(null);
+    try {
+      const next = assemble(lab, source, destination);
+      const item = next.items.at(-1)!;
+      checkpoint();
+      edit(() => next);
+      setFlash(item.key);
+      setMessage((lookup(item.id)?.name ?? particleLabel(item.counts!)) + " · " + composition(item.counts!));
+    } catch (err) {
+      setMessage((err as Error).message);
+    }
   }
   async function combine(
     first: string,
@@ -181,6 +223,7 @@ export default function Laboratory() {
     setTarget(null);
     try {
       let result = combineCurated(first, second);
+      if (!result && [first, second].some(id => catalog.get(id)?.category === "Ion")) result = deterministicRule(first, second);
       if (!result) {
         try {
           const res = await fetch("/api/combinations", {
@@ -205,13 +248,14 @@ export default function Laboratory() {
         }
       }
       const outcome = result!,
-        product = outcome.product,
-        newItem = product && sample(product.id, x, y);
-      if (product) {
+        products = reactionProducts(outcome);
+      const rect = canvas.current!.getBoundingClientRect();
+      const newItems = placeProducts(products, x, y, rect.width, rect.height, lab.items.filter(i => !remove.includes(i.key)));
+      if (newItems.length) {
         checkpoint();
-        setFlash(newItem!.key);
+        setFlash(newItems[0].key);
       }
-      const title = product ? product.name : "No supported reaction";
+      const title = products.length ? products.map(p => p.name).join(" + ") : "No supported reaction";
       const detail = [outcome.equation, outcome.conditions, outcome.explanation]
         .filter(Boolean)
         .join(" · ");
@@ -219,20 +263,20 @@ export default function Laboratory() {
         time: Date.now(),
         title,
         detail,
-        success: !!product,
-        productId: product?.id,
+        success: !!products.length,
+        ...(products.length > 1 ? { productIds: products.map(p => p.id) } : { productId: products[0]?.id }),
       };
-      edit((l) => ({
+      edit((l) => remove.every(key => l.items.some(i => i.key === key)) ? ({
         ...l,
-        items: newItem
-          ? [...l.items.filter((i) => !remove.includes(i.key)), newItem]
+        items: newItems.length
+          ? [...l.items.filter((i) => !remove.includes(i.key)), ...newItems]
           : l.items,
-        discoveries: product ? discover(l, product) : l.discoveries,
+        discoveries: products.reduce((discoveries, p) => discover({ ...l, discoveries }, p), l.discoveries),
         log: [entry, ...l.log].slice(0, 150),
-      }));
+      }) : l);
       setMessage(
-        product
-          ? product.name + " · " + outcome.equation + " · " + outcome.conditions
+        products.length
+          ? title + " · " + outcome.equation + " · " + (outcome.products ? outcome.explanation : outcome.conditions)
           : outcome.explanation,
       );
     } finally {
@@ -241,7 +285,7 @@ export default function Laboratory() {
     }
   }
   function start(e: ReactPointer<HTMLButtonElement>, id: string, key?: string) {
-    if (e.button !== 0 || pending.current) return;
+    if (!e.isPrimary || e.button !== 0 || pending.current) return;
     suppress.current = false;
     drag.current = {
       id,
@@ -258,10 +302,11 @@ export default function Laboratory() {
     if (!d || d.pointer !== e.pointerId) return;
     if (Math.hypot(e.clientX - d.startX, e.clientY - d.startY) > 5)
       d.moved = true;
-    if (d.moved) setGhost({ id: d.id, x: e.clientX, y: e.clientY });
+    if (d.moved) setGhost({ id: d.id, counts: lab.items.find(i => i.key === d.key)?.counts ?? supplyCounts(d.id), x: e.clientX, y: e.clientY });
   }
   function end(e: ReactPointer<HTMLButtonElement>) {
     const d = drag.current;
+    if (d?.pointer !== e.pointerId) return;
     drag.current = null;
     setGhost(null);
     if (!d?.moved || !canvas.current) return;
@@ -282,24 +327,19 @@ export default function Laboratory() {
         18,
         Math.min(82, ((e.clientY - rect.top) / rect.height) * 100),
       );
+    const hit = document.elementFromPoint(e.clientX, e.clientY)?.closest<HTMLElement>("[data-sample-key]")?.dataset.sampleKey;
     const near = lab.items
       .filter((i) => i.key !== d.key)
       .map((i) => ({
         i,
-        dist: Math.hypot(
+        dist: i.key === hit ? 0 : Math.hypot(
           ((i.x - x) * rect.width) / 100,
           ((i.y - y) * rect.height) / 100,
         ),
       }))
       .sort((a, b) => a.dist - b.dist)[0];
     if (near && near.dist < 58) {
-      void combine(
-        d.id,
-        near.i.id,
-        [near.i.key, ...(d.key ? [d.key] : [])],
-        near.i.x,
-        near.i.y,
-      );
+      drop(lab.items.find(i => i.key === d.key) ?? sample(d.id, x, y), near.i);
     } else if (d.key) {
       checkpoint();
       edit((l) => ({
@@ -313,26 +353,24 @@ export default function Laboratory() {
       onPointerDown: (e: ReactPointer<HTMLButtonElement>) => start(e, id, key),
       onPointerMove: move,
       onPointerUp: end,
-      onPointerCancel: () => {
+      onPointerCancel: (e: ReactPointer<HTMLButtonElement>) => {
+        if (drag.current?.pointer !== e.pointerId) return;
+        suppress.current = true;
         drag.current = null;
         setGhost(null);
       },
-      onClick: () => {
-        if (suppress.current) {
+      onClick: (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (e.detail && suppress.current) {
           suppress.current = false;
           return;
         }
         if (target) {
           const other = lab.items.find((s) => s.key === target);
           if (other && key !== target)
-            void combine(
-              other.id,
-              id,
-              [target, ...(key ? [key] : [])],
-              other.x,
-              other.y,
-            );
+            drop(lab.items.find(i => i.key === key) ?? sample(id, other.x, other.y), other);
           else setTarget(null);
+        } else if (key && id === "particle-group") {
+          setTarget(key);
         } else if (key) {
           setDetail(id);
           setModal("detail");
@@ -343,6 +381,7 @@ export default function Laboratory() {
   }
   const [selectedKey, setSelectedKey] = useState("");
   const current = lookup(detail);
+  const inspected = lab.items.find(i => i.key === selectedKey && i.id === detail);
   return (
     <div className="shell">
       <header className="topbar">
@@ -414,7 +453,7 @@ export default function Laboratory() {
               />
             </label>
             <div className="filters">
-              {["All", "Elements", "Compounds"].map((f) => (
+              {["All", "Elements", "Compounds", "Acids", "Bases"].map((f) => (
                 <button
                   key={f}
                   aria-pressed={filter === f}
@@ -442,16 +481,19 @@ export default function Laboratory() {
                     borderColor: colorFor(s.id) + "35",
                   }}
                 >
-                  {s.formula}
+                  {s.category === "Ion" ? formulaFor(s) : s.formula}
                 </span>
                 <span className="sub-text">
                   <b>{s.name}</b>
-                  <small>{elemental.get(s.id)?.category ?? s.category}</small>
+                  <small>{elemental.get(s.id)?.category ?? acidBaseFamily.get(s.id) ?? s.category}</small>
                 </span>
               </button>
             ))}
             {!choices.length && (
-              <p className="muted">No matching substances.</p>
+              <p className="muted">{query ? "No matching substances."
+                : filter === "Acids" ? "Try combining carbon dioxide with water."
+                : filter === "Bases" ? "Try combining magnesium oxide with water."
+                : owned.length ? "No matching substances." : "Atoms you build will appear here."}</p>
             )}
           </div>
           <button
@@ -490,7 +532,7 @@ export default function Laboratory() {
               </button>
               <div>
                 {mode === "hard" && (
-                  <button onClick={() => setModal("build")}>
+                  <button disabled={busy} onClick={() => setModal("build")}>
                     <Atom size={15} />
                     Build atom
                   </button>
@@ -501,6 +543,7 @@ export default function Laboratory() {
                     edit((l) => ({ ...l, items: undo.at(-1)! }));
                     setUndo((u) => u.slice(0, -1));
                     setTarget(null);
+                    setMessage("");
                   }}
                 >
                   <Undo2 size={15} />
@@ -520,13 +563,25 @@ export default function Laboratory() {
                 </button>
               </div>
             </header>
+            {mode === "hard" && (
+              <section className="particle-shelf" aria-label="Subatomic particles">
+                <strong>Subatomic particles</strong>
+                <div>{Object.keys(supplies).map((particle, index) => (
+                  <button key={particle} disabled={busy} {...handlers(particle)}>
+                    <b aria-hidden="true">{["p⁺", "n⁰", "e⁻"][index]}</b>{particle}
+                  </button>
+                ))}</div>
+              </section>
+            )}
             <div className={"canvas " + (game.grid ? "grid" : "")} ref={canvas}>
               {lab.items.map((i) => {
                 const s = lookup(i.id);
+                const name = s?.name ?? (i.counts && particleLabel(i.counts));
                 return (
-                  s && (
+                  name && (
                     <button
                       key={i.key}
+                      data-sample-key={i.key}
                       className={
                         "specimen " +
                         (flash === i.key ? "discover " : "") +
@@ -534,19 +589,20 @@ export default function Laboratory() {
                       }
                       style={{ left: i.x + "%", top: i.y + "%" }}
                       {...handlers(i.id, i.key)}
-                      aria-label={s.name + " on canvas, inspect or combine"}
+                      aria-pressed={target === i.key}
+                      aria-label={name + " on canvas" + (i.counts ? ", " + composition(i.counts) + ", charge " + (i.counts.protons - i.counts.electrons) : "") + ", inspect or combine"}
                     >
                       <span className="model">
-                        <Molecule
+                        {i.counts ? (s ? <span className="particle-mark"><sup>{i.counts.protons + i.counts.neutrons}</sup>{s.formula}</span> : particleMark(i.counts)) : s && <Molecule
                           id={s.id}
                           descriptor={s.icon.name}
                           size={131}
-                        />
+                        />}
                       </span>
                       <span className="spec-label">
-                        <i style={{ background: colorFor(s.id) }} />
-                        {s.name}
-                        <code>{formulaFor(s)}</code>
+                        <i style={{ background: colorFor(i.id) }} />
+                        {name}
+                        <code>{i.counts ? composition(i.counts) : s && formulaFor(s)}</code>
                       </span>
                     </button>
                   )
@@ -557,17 +613,10 @@ export default function Laboratory() {
                   <Atom />
                   <p>
                     {mode === "hard"
-                      ? "Build an atom to start experimenting."
+                      ? "Drag a proton here, then drop an electron on it to build hydrogen."
                       : "Select a substance from the library."}
                   </p>
-                  {mode === "hard" && (
-                    <button
-                      className="primary"
-                      onClick={() => setModal("build")}
-                    >
-                      Open atom builder
-                    </button>
-                  )}
+
                 </div>
               )}
             </div>
@@ -649,7 +698,7 @@ export default function Laboratory() {
       </div>
       {ghost && (
         <div className="ghost" style={{ left: ghost.x, top: ghost.y }}>
-          <Molecule id={ghost.id} size={70} />
+          {ghost.counts ? <span className="spec-label">{lookup(ghost.id)?.name ?? particleLabel(ghost.counts)} · {composition(ghost.counts)}</span> : <Molecule id={ghost.id} size={70} />}
         </div>
       )}
       {modal && (
@@ -671,11 +720,11 @@ export default function Laboratory() {
           {modal === "help" && (
             <>
               <p>
-                Drag a library sample onto the canvas, then drop it onto another
+                In hard mode, drag a proton onto the canvas and drop an electron on it to unlock hydrogen. Add particles to a built atom to change its composition. Drop two neutral samples together for a chemical reaction. Drag a library sample onto the canvas, then drop it onto another
                 sample. You can also click a library entry to place it.
               </p>
               <p>
-                Using a keyboard or touch? Open a canvas sample, choose “Combine
+                Click or press Enter on a supply to place one. Select a particle group, then a supply or another sample to combine. For a neutral sample, open it, choose “Combine
                 with…”, then select another sample.
               </p>
               <p>
@@ -733,31 +782,17 @@ export default function Laboratory() {
           )}
           {modal === "build" && (
             <Builder
-              onBuild={(id, label) => {
-                const s = catalog.get(id)!;
+              onBuild={(atom) => {
                 checkpoint();
-                edit((l) => ({
-                  ...l,
-                  discoveries: discover(l, s),
-                  items: [...l.items, sample(id, 45, 48)],
-                  log: [
-                    {
-                      title: label,
-                      detail: "Built an atom and added an elemental sample.",
-                      time: Date.now(),
-                      productId: id,
-                      success: true,
-                    },
-                    ...l.log,
-                  ].slice(0, 150),
-                }));
+                edit((l) => addBuiltAtom(l, atom));
                 setModal(null);
-                setMessage("Atom built · " + label);
+                setMessage(atom.element.name + " added to the canvas and library.");
               }}
             />
           )}
           {modal === "detail" && current && (
             <>
+              {inspected?.counts && <p>Built atom · {composition(inspected.counts)}</p>}
               <Details
                 s={current}
                 log={lab.log}
@@ -770,9 +805,7 @@ export default function Laboratory() {
                     : undefined
                 }
               />
-              {lab.items.some(
-                (i) => i.key === selectedKey && i.id === detail,
-              ) && (
+              {inspected && (
                 <button
                   className="secondary"
                   onClick={() => {

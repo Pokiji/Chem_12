@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { buildAtom, canonicalKey, combineCurated, deterministicRule, elements, recipes, substances } from '../lib/chem.ts'
+import { acidBaseFamily, buildAtom, canonicalKey, combineCurated, deterministicRule, elements, reactionProducts, recipes, sampleFormula, substances } from '../lib/chem.ts'
 
 test('each atomic number constructs the corresponding representative isotope', () => {
   assert.equal(elements.length, 118)
@@ -62,11 +62,35 @@ function counts(formula: string, coefficient: number, total: Map<string, number>
   expand(ungrouped, coefficient)
 }
 
+test('acid and base discoveries are reachable from element samples', () => {
+  const available = new Set(elements.map(e => e.id))
+  for (const [a, b, product] of [
+    ['hydrogen', 'oxygen', 'water'], ['carbon', 'oxygen', 'carbon-dioxide'],
+    ['carbon-dioxide', 'water', 'carbonic-acid'],
+    ['sulfur', 'oxygen', 'sulfur-dioxide'], ['sulfur-dioxide', 'oxygen', 'sulfur-trioxide'],
+    ['sulfur-trioxide', 'water', 'sulfuric-acid'],
+    ['magnesium', 'oxygen', 'magnesium-oxide'], ['magnesium-oxide', 'water', 'magnesium-hydroxide'],
+    ['calcium', 'oxygen', 'calcium-oxide'], ['calcium-oxide', 'water', 'calcium-hydroxide'],
+    ['nitrogen', 'hydrogen', 'ammonia'],
+  ]) {
+    assert.ok(available.has(a) && available.has(b))
+    const result = combineCurated(b, a)
+    assert.equal(result?.product?.id, product)
+    assert.equal(result?.product?.category, 'Compound')
+    available.add(product)
+  }
+  for (const ion of combineCurated('water', 'water')!.products!) available.add(ion.id)
+  for (const id of acidBaseFamily.keys()) assert.ok(available.has(id))
+})
+
 test('all curated neutral equations conserve every element and reference catalog entries', () => {
   const ids = new Set(substances.map(s => s.id))
   const keys = new Set<string>()
   for (const r of recipes) {
     assert.ok([r.a,r.b,r.productId].every(id => ids.has(id)))
+    assert.deepEqual(r.reactantFormulas, [r.a, r.b].map(id => sampleFormula(substances.find(s => s.id === id)!)))
+    const terms = [...r.reactantFormulas, r.formula].map((f, i) => (r.coefficients[i] === 1 ? '' : r.coefficients[i]) + f)
+    assert.deepEqual(r.equation.split(/ \+ | [→⇌] /), terms)
     const key = canonicalKey(r.a,r.b)
     assert.ok(!keys.has(key))
     keys.add(key)
@@ -74,5 +98,32 @@ test('all curated neutral equations conserve every element and reference catalog
     r.reactantFormulas.forEach((f,i) => counts(f, r.coefficients[i], left))
     counts(r.formula, r.coefficients[2], right)
     assert.deepEqual(left,right,r.equation)
+  }
+})
+
+
+test('both directions conserve every atom and net charge, including repeated water', () => {
+  for (const [a, b, expected] of [
+    ['water', 'water', ['hydronium', 'hydroxide']],
+    ['hydroxide', 'hydronium', ['water', 'water']],
+  ] as const) {
+    const result = combineCurated(a, b)!
+    assert.deepEqual(result, combineCurated(b, a))
+    const inputs = [a,b].map(id => substances.find(s => s.id === id)!)
+    const outputs = reactionProducts(result)
+    assert.deepEqual(outputs.map(s => s.id), expected)
+    const totals = (species: typeof outputs) => {
+      const atoms = new Map<string, number>()
+      let charge = 0
+      for (const s of species) {
+        counts(s.formula, 1, atoms)
+        charge += s.formula.endsWith('+') ? 1 : s.formula.endsWith('-') ? -1 : 0
+      }
+      return { atoms, charge }
+    }
+    assert.deepEqual(totals(inputs), totals(outputs))
+  }
+  for (const recipe of recipes) {
+    assert.deepEqual(reactionProducts(combineCurated(recipe.a, recipe.b)!).map(p => p.id), [recipe.productId])
   }
 })

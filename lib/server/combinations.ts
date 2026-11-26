@@ -20,6 +20,7 @@ export async function combineSubstances(inputA:string,inputB:string,canGenerate:
     if (!first || !second) throw new CombinationError('Unknown substance. Select an item from the library.',404)
     const recipe=combineCurated(a,b)
     if (recipe) return recipe
+    if (first.category === 'Ion' || second.category === 'Ion' || /[+-]$/.test(first.formula) || /[+-]$/.test(second.formula)) return none('No curated reaction is available for this ion pair.')
     const key=canonicalKey(a,b)
     const cached=await lookup(key).catch(()=>null)
     if (cached) return cached
